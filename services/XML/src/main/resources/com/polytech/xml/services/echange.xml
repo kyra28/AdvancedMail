@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<echange 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="discussion.xsd">
+	<mail>
+		<header>
+			<expediteur></expediteur>
+			<destinataire>ANtoine</destinataire>
+			<objet></objet>
+			<date>2002-05-30T09:00:00</date>
+		</header>
+		<body>
+			<block>
+				<text>Comment tu vas</text>
+				<reponseAttendue>
+					<libre/>
+				</reponseAttendue>
+			</block>
+		</body>
+		<reponses/>
+	</mail>
+	
+</echange>

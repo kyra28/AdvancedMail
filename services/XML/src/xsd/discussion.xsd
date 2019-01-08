@@ -25,7 +25,7 @@
 		<xs:choice>
 			<xs:element name="libre" type="emptyType"/>
 			<xs:element name="num" type="emptyType"/>
-			<xs:element name="num" type="emptyType"/>
+			<xs:element name="date" type="emptyType"/>
 			<xs:element name="tel" type="emptyType"/>
 			<xs:element name="choix" type="valuesType"/>
 			<xs:element name="selecteur" type="valuesType"/>

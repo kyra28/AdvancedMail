@@ -1,5 +1,5 @@
 package com.polytech.xml.services;
 
-public class Mailer {
+public interface Mailer {
 
 }
