@@ -1,6 +1,5 @@
 package com.polytech.xml.services;
 
-import java.awt.List;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -10,7 +9,7 @@ import javax.xml.bind.Unmarshaller;
 import com.polytech.xml.classes.Echange;
 
 public class MailerImpl implements Mailer{
-	private final static String PATH = "C:\\Users\\Antoine\\Documents\\AdvancedMail\\users\\";
+	private final static String PATH = "C:\\Users\\Antoine\\Dropbox\\Cours\\Polytech\\APP5\\Informatique\\xml\\Projet\\AdvancedMail\\users\\";
 	
 	private ArrayList<Echange> echanges= new ArrayList<Echange>();
 	
