@@ -1,21 +1,20 @@
 package com.polytech.xml.gui;
 
-import java.awt.List;
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.polytech.xml.classes.Echange;
 import com.polytech.xml.classes.HeaderType;
+import com.polytech.xml.classes.MailThread;
 
 public class TableModelMailbox extends AbstractTableModel{
 	private final ArrayList<HeaderType> headers = new ArrayList<HeaderType>();
 	private final String[] entetes = {"Objet","Expediteur","date"};
 	
-	public TableModelMailbox(ArrayList<Echange> echanges) {
-		for (Echange echange : echanges)
+	public TableModelMailbox(ArrayList<MailThread> threads) {
+		for (MailThread thread : threads)
 		{
-			headers.add(echange.getMail().get(0).getHeader());
+			headers.add(thread.getMail().getHeader());
 		}
 	}
 	
@@ -30,9 +29,9 @@ public class TableModelMailbox extends AbstractTableModel{
 	public Object getValueAt(int rowIndex, int columnIndex) {
         switch(columnIndex){
         case 0:
-            return headers.get(rowIndex).getObjet();
+            return headers.get(rowIndex).getObject();
         case 1:
-            return headers.get(rowIndex).getExpediteur();
+            return headers.get(rowIndex).getSender();
         case 2:
         	return headers.get(rowIndex).getDate();
         default:

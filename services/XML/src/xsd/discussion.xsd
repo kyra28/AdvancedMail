@@ -5,30 +5,37 @@
 
 	<xs:include schemaLocation="dis2.xsd"/>
 	
- 	<xs:element name="echange">
+ 	<xs:element name="mailThread">
         <xs:complexType>
 			<xs:sequence>
-				<xs:element name="mail" type="mailType" maxOccurs="unbounded" />
+				<xs:element name="mail" type="mailType" />
+				<xs:element name="oldMails" type="oldMailsType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
     </xs:element>   
 	
-	<xs:complexType name="mailType">
+	<xs:complexType name="oldMailsType">
 		<xs:sequence>
-			<xs:element name="header" type="headerType"/>
-			<xs:element name="body" type="bodyType" minOccurs="0"/>
-			<xs:element ref="reponses"/>
+			<xs:element name="mail" type="mailType" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 	
-	<xs:complexType name="reponseAttendueType">
+	<xs:complexType name="mailType">
+		<xs:sequence>
+			<xs:element name="header" type="headerType"/>
+			<xs:element name="body" type="bodyType"/>
+			<xs:element ref="responses" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="expectedResponseType">
 		<xs:choice>
-			<xs:element name="libre" type="emptyType"/>
+			<xs:element name="free" type="emptyType"/>
 			<xs:element name="num" type="emptyType"/>
 			<xs:element name="date" type="emptyType"/>
 			<xs:element name="tel" type="emptyType"/>
-			<xs:element name="choix" type="valuesType"/>
-			<xs:element name="selecteur" type="valuesType"/>
+			<xs:element name="choice" type="valuesType"/>
+			<xs:element name="selector" type="valuesType"/>
 		</xs:choice>
 	</xs:complexType>
 	
@@ -37,68 +44,68 @@
 	
 	<xs:complexType name="valuesType">
 		<xs:sequence>
-			<xs:element name="value" type="xs:string" minOccurs="2" maxOccurs="unbounded"/>
+			<xs:element name="values" type="xs:string" minOccurs="2" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	
 	<xs:complexType name="blockType">
 		<xs:sequence>
 			<xs:element name="text" type="xs:string"/>
-			<xs:element name="reponseAttendue" type="reponseAttendueType" minOccurs="0"/>
+			<xs:element name="expectedResponse" type="expectedResponseType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	
 	<xs:complexType name="bodyType">
 		<xs:sequence>
-			<xs:element name="block" type="blockType" maxOccurs="unbounded"/>
+			<xs:element name="blocks" type="blockType" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	
 	<xs:complexType name="headerType">
 		<xs:sequence>
-			<xs:element name="expediteur" type="xs:string"/>
-			<xs:element name="destinataire" type="xs:string"/>
-			<xs:element name="objet" type="xs:string"/>
+			<xs:element name="sender" type="xs:string"/>
+			<xs:element name="recipient" type="xs:string"/>
+			<xs:element name="object" type="xs:string"/>
 			<xs:element name="date" type="xs:dateTime"/>
 			<xs:element name="xsdFileName" type="xs:string"/>
 		</xs:sequence>
 	</xs:complexType>
 	
 	
-	<xs:complexType name="libreType">
+	<xs:complexType name="freeType">
 		<xs:sequence>
 			<xs:element name="question" type="xs:string"/>
-			<xs:element name="valeur" type="xs:string" />
+			<xs:element name="value" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="numType">
 		<xs:sequence>
 			<xs:element name="question" type="xs:string"/>
-			<xs:element name="valeur" type="xs:decimal" />
+			<xs:element name="value" type="xs:decimal" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="dateType">
 		<xs:sequence>
 			<xs:element name="question" type="xs:string"/>
-			<xs:element name="valeur" type="xs:date" />
+			<xs:element name="value" type="xs:date" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="telType">
+	<xs:complexType name="phoneType">
 		<xs:sequence>
 			<xs:element name="question" type="xs:string"/>
-			<xs:element name="valeur" type="xs:string" />
+			<xs:element name="value" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="choixType">
+	<xs:complexType name="choiceType">
 		<xs:sequence>
 			<xs:element name="question" type="xs:string"/>
-			<xs:element name="valeur" type="xs:string" />
+			<xs:element name="value" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="selecteurType">
+	<xs:complexType name="selectorType">
 		<xs:sequence>
 			<xs:element name="question" type="xs:string"/>
-			<xs:element name="valeur" type="xs:string" />
+			<xs:element name="value" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
 	

@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import com.polytech.xml.classes.Echange;
+import com.polytech.xml.classes.MailThread;
 
 public class MailerImpl implements Mailer{
 	private final static String PATH = "C:\\Users\\Antoine\\Dropbox\\Cours\\Polytech\\APP5\\Informatique\\xml\\Projet\\AdvancedMail\\users\\";
 	
-	private ArrayList<Echange> echanges= new ArrayList<Echange>();
+	private ArrayList<MailThread> mailThreads= new ArrayList<MailThread>();
 	
 	public MailerImpl(String user) {
 		File folder = new File(PATH+user+"\\recu\\mails");
@@ -20,8 +20,8 @@ public class MailerImpl implements Mailer{
 	    		JAXBContext jc = JAXBContext.newInstance("com.polytech.xml.classes");
 	    		Unmarshaller um = jc.createUnmarshaller();
 	    		
-	    		Echange echange = (Echange) um.unmarshal(fileEntry);
-	    		echanges.add(echange);
+	    		MailThread thread = (MailThread) um.unmarshal(fileEntry);
+	    		mailThreads.add(thread);
 	    	}catch (Exception e)
 	    	{
 	    		e.printStackTrace();
@@ -29,8 +29,8 @@ public class MailerImpl implements Mailer{
 	    }
 	}
 	
-	public ArrayList<Echange> getListEchange()
+	public ArrayList<MailThread> getListMailThread()
 	{
-		return echanges;
+		return mailThreads;
 	}
 }
