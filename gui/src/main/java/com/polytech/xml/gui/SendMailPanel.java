@@ -34,7 +34,6 @@ import com.polytech.xml.classes.MailType;
 public class SendMailPanel extends JPanel implements ActionListener{
 	private JTextField recipient = new JTextField("recipient");
 	private JTextArea object = new JTextArea(1,50);
-	private JTextArea content = new JTextArea(10,50);
 	private JButton sendButton = new MyButton("SEND");
 	private SendMailResponsesPanel responsesPanel = new SendMailResponsesPanel();
 	
@@ -50,7 +49,6 @@ public class SendMailPanel extends JPanel implements ActionListener{
 		this.add(recipient);
 		this.add(object);
 		this.add(contentLabel);
-		this.add(content);
 		this.add(responsesPanel);
 		this.add(sendButton);
 		
@@ -76,12 +74,9 @@ public class SendMailPanel extends JPanel implements ActionListener{
 		BodyType bodyType = new BodyType();
 		ArrayList<BlockType> blocks = new ArrayList<BlockType>();
 		
-		BlockType block = new BlockType();
-		block.setText(content.getText());
-		blocks.add(block);
 		blocks.addAll(responsesPanel.getBlocks());
 
-		bodyType.getBlocks().addAll(blocks);
+		bodyType.getBlock().addAll(blocks);
 		mailType.setBody(bodyType);
 
 		HeaderType header = new HeaderType(); 
@@ -104,7 +99,7 @@ public class SendMailPanel extends JPanel implements ActionListener{
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			String path="C:\\Users\\Antoine\\Dropbox\\Cours\\Polytech\\APP5\\Informatique\\xml\\Projet\\AdvancedMail\\users\\"+MailBoxFrame.user+"\\recu\\mails\\";
-			m.marshal(thread, new File(path+"test.xml"));
+			m.marshal(thread, new File(path+"test2.xml"));
 		} 
 		catch (JAXBException ex) 
 		{

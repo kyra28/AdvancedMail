@@ -27,6 +27,7 @@ import com.polytech.xml.classes.ValuesType;
 public class SendMailResponsesPanel extends JPanel implements ActionListener{
 	private JButton addResponseButton = new MyButton("ADD Response");
 	private JComboBox responseTypeCombo;
+	private JButton addTextButton = new MyButton("ADD TEXT");
 	private Map<String,String> responseTypeMap = new HashMap<String,String>();
 	
 	private ArrayList<SendMailResponsesResponsePanel> responsePanelList = new ArrayList<SendMailResponsesResponsePanel>();
@@ -39,17 +40,23 @@ public class SendMailResponsesPanel extends JPanel implements ActionListener{
 		addResponseButton.addActionListener(this);
 		addResponseButton.setActionCommand("addResponse");
 		
+		addTextButton.addActionListener(this);
+		addResponseButton.setActionCommand("addText");
+		
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		
 		this.add(responseLabel);
 		this.add(responseTypeCombo);
 		this.add(addResponseButton);
+		this.add(addTextButton);
 		
 		//setSize(800,600); setVisible(true);		
 	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("addResponse"))
+			addResponse(responseTypeMap.get((String)responseTypeCombo.getSelectedItem()));
+		if (e.getActionCommand().equals("addText"))
 			addResponse(responseTypeMap.get((String)responseTypeCombo.getSelectedItem()));
 		
 	}
@@ -58,6 +65,7 @@ public class SendMailResponsesPanel extends JPanel implements ActionListener{
 	{
 		SendMailResponsesResponsePanel response = new SendMailResponsesResponsePanel(type);
 		responsePanelList.add(response);
+		JLabel label = new JLabel(type);
 		this.add(response);
 		this.revalidate();
 	}
@@ -81,7 +89,7 @@ public class SendMailResponsesPanel extends JPanel implements ActionListener{
 		for (SendMailResponsesResponsePanel responsePanel : responsePanelList)
 		{
 			BlockType block = new BlockType();
-			block.setText(responsePanel.getQuestion());
+			block.getTextAndFreeAndNum().add(responsePanel.getQuestion());
 			ExpectedResponseType expectedResponse = new ExpectedResponseType();
 			MultipleValuesTypePanel multipleValues = responsePanel.getMultipleValuesPanel();
 			if (multipleValues==null)

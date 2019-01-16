@@ -20,6 +20,7 @@ public class MailBoxFrame extends JFrame{
 	
 	private JPanel inboxPanel;
 	private JPanel sendMailPanel = new SendMailPanel();
+	private JPanel sendMailAdvancedPanel = new SendMailAdvancedPanel();
 	private JPanel activePanel;
 	
 	private JPanel centerPanel = new JPanel();
@@ -55,6 +56,18 @@ public class MailBoxFrame extends JFrame{
 				activePanel=sendMailPanel;
 			}
 		});
+		
+		JButton writeAdvancedButton = new MyButton("Ecrire Avancé");
+		writeAdvancedButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				activePanel.setVisible(false);
+				sendMailAdvancedPanel.setVisible(true);
+				System.out.println("ok");
+				activePanel=sendMailAdvancedPanel;
+			}
+		});
+		
 		JButton disconectButton = new MyButton("Deconnexion");
 		disconectButton.addActionListener(new ActionListener() {
 			
@@ -65,6 +78,7 @@ public class MailBoxFrame extends JFrame{
 		
 		menuPanel.add(inboxButton);
 		menuPanel.add(writeButton);
+		menuPanel.add(writeAdvancedButton);
 		menuPanel.add(disconectButton);
 		
 		contentPane.add(menuPanel,BorderLayout.NORTH);
@@ -74,6 +88,7 @@ public class MailBoxFrame extends JFrame{
 		
 		centerPanel.add(inboxPanel);
 		centerPanel.add(sendMailPanel);
+		centerPanel.add(sendMailAdvancedPanel);
 		contentPane.add(centerPanel,BorderLayout.CENTER);
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
 		setSize(800,600); setVisible(true);	sendMailPanel.setVisible(false);

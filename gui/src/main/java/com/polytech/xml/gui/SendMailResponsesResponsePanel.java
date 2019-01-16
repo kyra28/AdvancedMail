@@ -24,17 +24,14 @@ public class SendMailResponsesResponsePanel extends JPanel{
 	private String type= null;
 	
 	private JLabel typeLabel;
-	private JTextArea question = new JTextArea(1, 40);
 
 	private MultipleValuesTypePanel multipleValuesPanel = null;
 	
 	public SendMailResponsesResponsePanel(String type){
 		this.type = type;
-		typeLabel = new JLabel("Reponse de type : "+type+"\nQuestion : ");
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		
 		this.add(typeLabel);
-		this.add(question);
 		
 		if (type.equals("choice") || type.equals("selector"))
 		{
@@ -46,10 +43,6 @@ public class SendMailResponsesResponsePanel extends JPanel{
 
 	public String getType() {
 		return type;
-	}
-
-	public String getQuestion() {
-		return question.getText();
 	}
 
 	public MultipleValuesTypePanel getMultipleValuesPanel() {

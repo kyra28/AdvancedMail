@@ -28,6 +28,18 @@
 		</xs:sequence>
 	</xs:complexType>
 	
+	<xs:complexType name="expectedResponseType">
+		<xs:choice>
+			<xs:element name="free" type="emptyType"/>
+			<xs:element name="num" type="emptyType"/>
+			<xs:element name="date" type="emptyType"/>
+			<xs:element name="tel" type="emptyType"/>
+			<xs:element name="choice" type="valuesType"/>
+			<xs:element name="selector" type="valuesType"/>
+		</xs:choice>
+	</xs:complexType>
+	
+	
 	<xs:complexType name="emptyType"/>
 	
 	<xs:complexType name="valuesType">
@@ -37,14 +49,9 @@
 	</xs:complexType>
 	
 	<xs:complexType name="blockType">
-		<xs:sequence maxOccurs="unbounded">
+		<xs:sequence>
 			<xs:element name="text" type="xs:string"/>
-			<xs:element name="free" type="emptyType"/>
-			<xs:element name="num" type="emptyType"/>
-			<xs:element name="date" type="emptyType"/>
-			<xs:element name="tel" type="emptyType"/>
-			<xs:element name="choice" type="valuesType"/>
-			<xs:element name="selector" type="valuesType"/>
+			<xs:element name="expectedResponse" type="expectedResponseType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	
