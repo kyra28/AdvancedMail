@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+elementFormDefault="qualified">
+
+
+	<xs:complexType name="responseType">
+		<xs:sequence>
+			
+		</xs:sequence>
+	</xs:complexType> 
+
+	<xs:complexType name="messageType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="text" type="xs:string"/>
+			<xs:element name="free" type="emptyType"/>
+			<xs:element name="num" type="emptyType"/>
+			<xs:element name="date" type="emptyType"/>
+			<xs:element name="tel" type="emptyType"/>
+			<xs:element name="choice" type="valuesType"/>
+			<xs:element name="selector" type="valuesType"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="emptyType"/>
+	
+	<xs:complexType name="valuesType">
+		<xs:sequence>
+			<xs:element name="value" type="xs:string" minOccurs="2" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation>
+		freeType-Libre;
+		numType-Nombre;
+		dateType-Date;
+		phoneType-Telephone;
+		choiceType-Choix;
+		selectorType-Selection
+		</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="freeType">
+     	<xs:restriction base="xs:string">
+       		<xs:minLength value="1"/>
+     	</xs:restriction>
+  	</xs:simpleType>
+  	
+	<xs:simpleType name="numType">
+     	<xs:restriction base="xs:decimal"/>
+  	</xs:simpleType>
+  	
+	<xs:simpleType name="dateType">
+     	<xs:restriction base="xs:date"/>
+  	</xs:simpleType>
+  	
+	<xs:simpleType name="phoneType">
+     	<xs:restriction base="xs:string"/>
+  	</xs:simpleType>
+
+	<xs:complexType name="choiceType">
+		<xs:sequence>
+			<xs:element name="value" type="xs:string" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="selected" type="xs:integer" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="selectorType">
+		<xs:sequence>
+			<xs:element name="value" maxOccurs="unbounded">
+			  	<xs:complexType>
+			   		<xs:simpleContent>
+			      		<xs:extension base="xs:string">
+			       			<xs:attribute name="selected" type="xs:boolean" use="required"/>
+			      		</xs:extension>
+			    	</xs:simpleContent>
+			  	</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>

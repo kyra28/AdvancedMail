@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 
 import com.polytech.xml.services.MailerImpl;
+import com.polytech.xml.services.XSDService;
 
 public class MailBoxFrame extends JFrame{
 
@@ -91,7 +92,7 @@ public class MailBoxFrame extends JFrame{
 		centerPanel.add(sendMailAdvancedPanel);
 		contentPane.add(centerPanel,BorderLayout.CENTER);
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
-		setSize(800,600); setVisible(true);	sendMailPanel.setVisible(false);
+		setSize(800,600); setVisible(true);	sendMailPanel.setVisible(false);sendMailAdvancedPanel.setVisible(false);
 		
 	}
 	
