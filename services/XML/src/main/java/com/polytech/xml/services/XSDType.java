@@ -9,7 +9,7 @@ public class XSDType {
 	{
 		this.id=id;
 		this.name=name;
-		if (id.equals("choiceType") || id.equals("selectorType"))
+		if (id.equals("choice") || id.equals("selector"))
 			type = "multiple";
 		else
 			type = "single";

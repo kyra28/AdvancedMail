@@ -39,6 +39,7 @@ import com.polytech.xml.classes.HeaderType;
 import com.polytech.xml.classes.MailThread;
 import com.polytech.xml.classes.MailType;
 import com.polytech.xml.classes.MessageType;
+import com.polytech.xml.classes.ResponseType;
 import com.polytech.xml.services.MailItem;
 import com.polytech.xml.services.MailResponseItem;
 import com.polytech.xml.services.MailResponsesItem;
@@ -87,8 +88,10 @@ public class SendMailPanel extends JPanel implements ActionListener{
 		MailType mailType = new MailType();
 		BodyType bodyType = new BodyType();
 		MessageType message = new MessageType();
-
+		ResponseType reponse = new ResponseType();
+		
 		bodyType.setMessage(message);
+		bodyType.setResponse(reponse);
 		mailType.setBody(bodyType);
 
 		HeaderType header = new HeaderType(); 
@@ -193,8 +196,20 @@ public class SendMailPanel extends JPanel implements ActionListener{
 
 	    for (MailItem item : itemsPanel.getItemList())
 	    {
-	    	Element e = doc.createElement("xs:element");
-		    e.setAttribute("type", item.getType());
+	    	Element e=null;
+	    	if (item instanceof MailTextItem)
+	    	{
+		    	e = doc.createElement("xs:element");
+		    	e.setAttribute("name", item.getType());
+			    e.setAttribute("type", "xs:string");
+	    	}
+	    	else
+	    	{
+		    	e = doc.createElement("xs:element");
+		    	e.setAttribute("name", item.getType());
+			    e.setAttribute("type", item.getType());
+	    	}
+
 
 	    	node.appendChild(e);
 	    }

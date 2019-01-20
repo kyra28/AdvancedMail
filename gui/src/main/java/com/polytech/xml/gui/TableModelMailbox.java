@@ -1,6 +1,7 @@
 package com.polytech.xml.gui;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -9,13 +10,20 @@ import com.polytech.xml.classes.MailThread;
 
 public class TableModelMailbox extends AbstractTableModel{
 	private final ArrayList<HeaderType> headers = new ArrayList<HeaderType>();
+	private final ArrayList<String> fileNameList = new ArrayList<String>();
 	private final String[] entetes = {"Objet","Expediteur","date"};
 	
-	public TableModelMailbox(ArrayList<MailThread> threads) {
-		for (MailThread thread : threads)
+	public TableModelMailbox(Map<String,MailThread> threadMap) {
+		for (Map.Entry<String, MailThread> entry : threadMap.entrySet())
 		{
-			headers.add(thread.getMail().getHeader());
+			headers.add(entry.getValue().getMail().getHeader());
+			fileNameList.add(entry.getKey());
 		}
+	}
+	
+	public String getFileName(int rowIndex)
+	{
+		return fileNameList.get(rowIndex);
 	}
 	
 	public int getRowCount() {

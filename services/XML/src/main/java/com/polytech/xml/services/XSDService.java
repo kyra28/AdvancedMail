@@ -17,7 +17,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class XSDService {
-	private final static String PATH = "C:\\Users\\Antoine\\workspace\\advanced-mail\\services\\XML\\src\\xsd\\defaultTypes.xsd";
+	private final static String PATH = "C:\\Users\\Antoine\\git\\AdvancedMail\\services\\XML\\src\\xsd\\defaultTypes.xsd";
 	
 	public XSDService()
 	{

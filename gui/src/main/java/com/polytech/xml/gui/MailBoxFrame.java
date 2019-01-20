@@ -1,6 +1,7 @@
 package com.polytech.xml.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -11,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
+import com.polytech.xml.services.ApplicationContext;
 import com.polytech.xml.services.MailerImpl;
 import com.polytech.xml.services.XSDService;
 
@@ -29,6 +31,7 @@ public class MailBoxFrame extends JFrame{
 	public MailBoxFrame(String user){
 		super("MailBox de "+user);
 		this.user=user;
+		ApplicationContext.setUser(user);
 		inboxPanel = new InboxPanel(user);
 		activePanel=inboxPanel;
 		
@@ -95,6 +98,5 @@ public class MailBoxFrame extends JFrame{
 		setSize(800,600); setVisible(true);	sendMailPanel.setVisible(false);sendMailAdvancedPanel.setVisible(false);
 		
 	}
-	
-	
+
 }

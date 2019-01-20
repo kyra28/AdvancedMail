@@ -11,15 +11,15 @@ elementFormDefault="qualified">
 	</xs:complexType> 
 
 	<xs:complexType name="messageType">
-		<xs:sequence maxOccurs="unbounded">
+		<xs:choice maxOccurs="unbounded">
 			<xs:element name="text" type="xs:string"/>
 			<xs:element name="free" type="emptyType"/>
-			<xs:element name="num" type="emptyType"/>
+			<xs:element name="number" type="emptyType"/>
 			<xs:element name="date" type="emptyType"/>
 			<xs:element name="tel" type="emptyType"/>
 			<xs:element name="choice" type="valuesType"/>
 			<xs:element name="selector" type="valuesType"/>
-		</xs:sequence>
+		</xs:choice>
 	</xs:complexType>
 	
 	<xs:complexType name="emptyType"/>
@@ -32,39 +32,39 @@ elementFormDefault="qualified">
 
 	<xs:annotation>
 		<xs:documentation>
-		freeType-Libre;
-		numType-Nombre;
-		dateType-Date;
-		phoneType-Telephone;
-		choiceType-Choix;
-		selectorType-Selection
+		free-Libre;
+		number-Nombre;
+		date-Date;
+		phone-Telephone;
+		choice-Choix;
+		selector-Selection
 		</xs:documentation>
 	</xs:annotation>
-	<xs:simpleType name="freeType">
+	<xs:simpleType name="free">
      	<xs:restriction base="xs:string">
        		<xs:minLength value="1"/>
      	</xs:restriction>
   	</xs:simpleType>
   	
-	<xs:simpleType name="numType">
+	<xs:simpleType name="number">
      	<xs:restriction base="xs:decimal"/>
   	</xs:simpleType>
   	
-	<xs:simpleType name="dateType">
+	<xs:simpleType name="date">
      	<xs:restriction base="xs:date"/>
   	</xs:simpleType>
   	
-	<xs:simpleType name="phoneType">
+	<xs:simpleType name="phone">
      	<xs:restriction base="xs:string"/>
   	</xs:simpleType>
 
-	<xs:complexType name="choiceType">
+	<xs:complexType name="choice">
 		<xs:sequence>
 			<xs:element name="value" type="xs:string" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="selected" type="xs:integer" use="required"/>
 	</xs:complexType>
-	<xs:complexType name="selectorType">
+	<xs:complexType name="selector">
 		<xs:sequence>
 			<xs:element name="value" maxOccurs="unbounded">
 			  	<xs:complexType>

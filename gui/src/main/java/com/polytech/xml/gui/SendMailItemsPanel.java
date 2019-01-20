@@ -65,7 +65,7 @@ public class SendMailItemsPanel extends JPanel implements ActionListener{
 	private void addResponse(String type)
 	{
 		SendMailItemsItemPanel response;
-		if (type.equals("chooseType") || type.equals("selectorType"))
+		if (type.equals("choice") || type.equals("selector"))
 			response = new SendMailItemResponsesPanel(type);
 		else
 			response = new SendMailItemResponsePanel(type);
