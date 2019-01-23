@@ -40,7 +40,6 @@
 			<xs:element name="recipient" type="xs:string"/>
 			<xs:element name="object" type="xs:string"/>
 			<xs:element name="date" type="xs:dateTime"/>
-			<xs:element name="xsdFileName" type="xs:string"/>
 		</xs:sequence>
 	</xs:complexType>
 	

@@ -1,6 +1,12 @@
 package com.polytech.xml.services;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +26,56 @@ public class ApplicationContext{
 		return PATH+user+"\\recu\\mails\\";
 	}
 	
+	public static String getMailPath(String recipient)
+	{
+		return PATH+recipient+"\\recu\\mails\\";
+	}
+	
+	
 	public static String getXSDPath()
 	{
 		return PATH+user+"\\recu\\xsd\\";
 	}
 	
+	public static String getXSDPath(String recipient)
+	{
+		return PATH+recipient+"\\recu\\xsd\\";
+	}
+	
+	public static String getFileId()
+	{
+		String fileId = "";
+		
+		BufferedWriter out = null;
+	    try {
+	        BufferedReader br = new BufferedReader(new FileReader(PATH+"id"));
+	        int fileIdNumber = 0;
+	        String temp = "";
+	        while ((temp = br.readLine()) != null) {
+	        	fileId=temp;
+	            fileIdNumber=(Integer.parseInt(fileId));
+	        }
+
+	        out = new BufferedWriter(new FileWriter(PATH+"id", false));
+	        out.write(String.valueOf(fileIdNumber+1));
+
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (out != null) {
+	            try {
+	                out.close();
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+		return fileId;
+	}
+	
 	public static String getConfPath()
 	{
-		return PATH+user+"\\";
+		return PATH+ApplicationContext.getUser()+"\\";
 	}
 
 	public static String getUser() {

@@ -17,7 +17,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class XSDService {
-	private final static String PATH = "C:\\Users\\Antoine\\git\\AdvancedMail\\services\\XML\\src\\xsd\\defaultTypes.xsd";
 	
 	public XSDService()
 	{
@@ -31,7 +30,7 @@ public class XSDService {
 		Document doc = DocumentBuilderFactory
 	            .newInstance()
 	            .newDocumentBuilder()
-	            .parse(new InputSource(PATH));
+	            .parse(new InputSource(ApplicationContext.getConfPath()+"defaultTypes.xsd"));
 
 	    // use xpath to find node to add to
 	    XPath xPath = XPathFactory.newInstance().newXPath();

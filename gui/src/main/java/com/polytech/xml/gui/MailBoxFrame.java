@@ -22,8 +22,8 @@ public class MailBoxFrame extends JFrame{
 
 	
 	private JPanel inboxPanel;
-	private JPanel sendMailPanel = new SendMailPanel();
-	private JPanel sendMailAdvancedPanel = new SendMailAdvancedPanel();
+	private JPanel sendMailPanel;
+	private JPanel sendMailAdvancedPanel;
 	private JPanel activePanel;
 	
 	private JPanel centerPanel = new JPanel();
@@ -32,6 +32,9 @@ public class MailBoxFrame extends JFrame{
 		super("MailBox de "+user);
 		this.user=user;
 		ApplicationContext.setUser(user);
+		
+		sendMailPanel = new SendMailPanel();
+		sendMailAdvancedPanel = new SendMailAdvancedPanel();
 		inboxPanel = new InboxPanel(user);
 		activePanel=inboxPanel;
 		

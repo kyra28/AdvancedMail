@@ -4,12 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.xml.datatype.DatatypeConfigurationException;
 
+import com.polytech.xml.classes.MailThread;
 import com.polytech.xml.services.MailerImpl;
 
 public class InboxPanel extends JPanel{
@@ -18,11 +22,13 @@ public class InboxPanel extends JPanel{
 	
 	private JPanel mailBoxPanel = new JPanel();
 	private JPanel mailPanel= new JPanel();
+	private JPanel replyPanel = new JPanel();
+	
 	
 	public InboxPanel(String user){
 		mailer = new MailerImpl(user);
 		tableModel = new TableModelMailbox(mailer.getListMailThread());
-		
+		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		showMailBox();
 		
 	}	
@@ -31,6 +37,7 @@ public class InboxPanel extends JPanel{
 	{
 		this.remove(mailPanel);
 		mailPanel = new JPanel();
+		MailThread mailThread = mailer.getMailThread(fileName);
 		JButton backButton = new JButton("Retour");
 		backButton.addActionListener(new ActionListener() {
 			
@@ -45,11 +52,11 @@ public class InboxPanel extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				reply();
+				reply(fileName, mailThread);
 				
 			}
 		});
-		ShowMailPanel showMailPanel = new ShowMailPanel(fileName,mailer.getMailThread(fileName));
+		ShowMailPanel showMailPanel = new ShowMailPanel(fileName,mailThread, true);
 		
 		mailPanel.setLayout(new BoxLayout(mailPanel,BoxLayout.PAGE_AXIS));
 		mailPanel.add(backButton);
@@ -58,6 +65,7 @@ public class InboxPanel extends JPanel{
 		
 		mailPanel.setVisible(true);
 		mailBoxPanel.setVisible(false);
+		replyPanel.setVisible(false);
 		
 		this.add(mailPanel);
 		this.revalidate();
@@ -86,9 +94,31 @@ public class InboxPanel extends JPanel{
 		this.add(mailBoxPanel);	
 	}
 	
-	private void reply()
+	private void reply(String fileName, MailThread mail)
 	{
-		
+		JButton send = new JButton("Envoyer");
+
+		ShowMailPanel showMailPanel = new ShowMailPanel(fileName, mail, false);
+		SendMailItemsPanel sendMailItemsPanel = new SendMailItemsPanel();
+		send.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					mailer.reply(fileName, showMailPanel.getHeader(), sendMailItemsPanel.getItemList(), showMailPanel.getValueList(), showMailPanel.getCheckedList(), showMailPanel.getSelectedRadioList());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		replyPanel.add(showMailPanel);
+		replyPanel.setVisible(true);
+		mailPanel.setVisible(false);
+		this.add(send);
+		this.add(replyPanel);
+		this.add(sendMailItemsPanel);
+		this.revalidate();
+		this.repaint();
 	}
 	
 	private void back()

@@ -44,32 +44,34 @@ import com.polytech.xml.services.XSDType;
 public class ReplyMailPanel extends JPanel{
 	private String fileName;
 	
-	private JLabel senderLabel = new JLabel();
-	private JLabel dateLabel = new JLabel();
-	private JLabel objectLabel = new JLabel();
+	private JLabel recipientLabel = new JLabel("Destinataire : ");
+	private JTextArea recipientArea = new JTextArea();
+	private JLabel objectLabel = new JLabel("Objet : ");
+	private JTextArea objectArea = new JTextArea();
 	private JLabel responseLabel = new JLabel("Contenu de la réponse : ");
 	private JLabel messageLabel = new JLabel("Contenu du message : ");
 	
-	private List<JTextField> fieldList = new ArrayList<JTextField>();
+	
 	
 	
 	public ReplyMailPanel(String fileName, MailThread mail){
 		this.fileName = fileName;
 		HeaderType header = mail.getMail().getHeader();
 		
-		senderLabel.setText("Expediteur : " + header.getSender());
-		dateLabel.setText("Date : " + header.getDate());
-		objectLabel.setText("Objet : " + header.getObject());
+		recipientArea.setText(header.getSender());
+		objectArea.setText("RE: "+header.getObject());
 		
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		
-		this.add(senderLabel);	
-		this.add(dateLabel);
+		this.add(recipientLabel);
+		this.add(recipientArea);
 		this.add(objectLabel);
+		this.add(objectArea);
+		this.add(responseLabel);
 		
 		try {
-			displayResponse();
 			displayMessage();
+			this.add(new SendMailItemsPanel());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,48 +79,6 @@ public class ReplyMailPanel extends JPanel{
 		
 		
 	}	
-	
-	private void displayResponse() throws Exception
-	{
-		Document doc = DocumentBuilderFactory
-	            .newInstance()
-	            .newDocumentBuilder()
-	            .parse(new InputSource(ApplicationContext.getMailPath()+fileName));
-
-	    // use xpath to find node to add to
-	    XPath xPath = XPathFactory.newInstance().newXPath();
-	    Node node = (Node) xPath.evaluate("/mailThread/mail/body/response",
-	            doc.getDocumentElement(), XPathConstants.NODE);
-	    
-	    node = node.getFirstChild();
-	    if (node != null)
-	    	this.add(responseLabel);
-	    	
-	    while(node!=null)
-	    {
-	    	Node childNode = node.getFirstChild();
-	    	if (childNode == null)
-	    	{
-	    		this.add(new JLabel(node.getNodeName()));
-	    		JTextField field = new JTextField();
-	    		fieldList.add(field);
-	    		this.add(field);
-	    	}
-	    	else if (childNode.getNodeType()==Node.TEXT_NODE)
-	    		this.add(new JLabel(childNode.getTextContent()));
-	    	else if (childNode.getNodeType()==Node.ELEMENT_NODE)
-	    	{
-	    		while (childNode!=null)
-	    		{
-	    			JCheckBox check = new JCheckBox(childNode.getFirstChild().getTextContent());
-	    			this.add(check);
-	    			childNode = childNode.getNextSibling();
-	    		}
-	    	}
-	    	node = node.getNextSibling();
-	    }
-		
-	}
 	
 	private void displayMessage() throws Exception
 	{	
@@ -143,7 +103,6 @@ public class ReplyMailPanel extends JPanel{
 	    	{
 	    		this.add(new JLabel(node.getNodeName()));
 	    		JTextField field = new JTextField();
-	    		field.setEditable(false);
 	    		this.add(field);
 	    	}
 	    	else if (childNode.getNodeType()==Node.TEXT_NODE)
@@ -153,7 +112,6 @@ public class ReplyMailPanel extends JPanel{
 	    		while (childNode!=null)
 	    		{
 	    			JCheckBox check = new JCheckBox(childNode.getTextContent());
-	    			check.setEnabled(false);
 	    			this.add(check);
 	    			childNode = childNode.getNextSibling();
 	    		}
