@@ -23,7 +23,7 @@ public class ApplicationContext{
 	
 	public static String getMailPath()
 	{
-		return PATH+user+"\\recu\\mails\\";
+		return getMailPath(user);
 	}
 	
 	public static String getMailPath(String recipient)
@@ -34,13 +34,35 @@ public class ApplicationContext{
 	
 	public static String getXSDPath()
 	{
-		return PATH+user+"\\recu\\xsd\\";
+		return getXSDPath(user);
 	}
 	
 	public static String getXSDPath(String recipient)
 	{
 		return PATH+recipient+"\\recu\\xsd\\";
 	}
+	
+	public static String getSendMailPath()
+	{
+		return getSendMailPath(user);
+	}
+	
+	public static String getSendMailPath(String recipient)
+	{
+		return PATH+recipient+"\\envoye\\mails\\";
+	}
+	
+	
+	public static String getSendXSDPath()
+	{
+		return getSendXSDPath(user);
+	}
+	
+	public static String getSendXSDPath(String recipient)
+	{
+		return PATH+recipient+"\\envoye\\xsd\\";
+	}
+	
 	
 	public static String getFileId()
 	{

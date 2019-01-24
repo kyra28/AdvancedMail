@@ -73,7 +73,6 @@ public class ReplyMailPanel extends JPanel{
 			displayMessage();
 			this.add(new SendMailItemsPanel());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

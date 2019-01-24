@@ -1,12 +1,19 @@
 package com.polytech.xml.services;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -15,18 +22,25 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.maven.shared.utils.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.polytech.xml.classes.BodyType;
 import com.polytech.xml.classes.HeaderType;
@@ -44,11 +58,13 @@ public class MailerImpl implements Mailer{
 		this.user=user;
 	}
 
-	public void send(HeaderType header, List<MailItem> itemList) throws DatatypeConfigurationException
+	public Boolean send(HeaderType header, List<MailItem> itemList) throws DatatypeConfigurationException
 	{
 		String fileId= ApplicationContext.getFileId();
-		String xsdFile= ApplicationContext.getXSDPath(header.getRecipient())+fileId+".xsd";
-		String xmlFile = ApplicationContext.getMailPath(header.getRecipient())+fileId+".xml";
+		String xsdFile = fileId+".xsd";
+		String xmlFile = fileId+".xml";
+		String xsdFilePath= ApplicationContext.getXSDPath(header.getRecipient())+xsdFile;
+		String xmlFilePath = ApplicationContext.getMailPath(header.getRecipient())+xmlFile;
 		
 		MailType mailType = new MailType();
 		BodyType bodyType = new BodyType();
@@ -77,7 +93,7 @@ public class MailerImpl implements Mailer{
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			
-			m.marshal(thread, new File(xmlFile));
+			m.marshal(thread, new File(xmlFilePath));
 		} 
 		catch (JAXBException ex) 
 		{
@@ -85,21 +101,34 @@ public class MailerImpl implements Mailer{
 		}
 		
 		try {
-			modifyXMLMessage(xmlFile,itemList);
-			modifyXSD(xsdFile,itemList);
+			modifyXMLMessage(xmlFilePath,itemList);
+			modifyXSD(xsdFilePath,itemList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		if (!validateXML(xmlFilePath, ApplicationContext.getXSDPath()+"defaultTypes.xsd"))
+		{
+			System.out.println("PAS VALID");
+			//new File(xmlFilePath).delete();
+			//new File(xsdFilePath).delete();
+			return false;
+		}
 		
+		copyFiles(xmlFilePath,ApplicationContext.getSendMailPath()+xmlFile);
+		copyFiles(xsdFilePath, ApplicationContext.getSendXSDPath()+xsdFile);
 		
+		System.out.println("SEND : " +fileId);
+		return true;
 	}
 	
-	public void reply(String fileName, HeaderType header, List<MailItem> itemList, List<String> stringValues, List<List<Integer>> checkedBoxList, List<Integer> selectedButtonList) throws Exception
+	public Boolean reply(String fileName, HeaderType header, List<MailItem> itemList, List<String> stringValues, List<List<Integer>> checkedBoxList, List<Integer> selectedButtonList) throws Exception
 	{
 		String fileId = ApplicationContext.getFileId();
-		String xsdFile= ApplicationContext.getXSDPath(header.getRecipient())+fileId+".xsd";
-		String xmlFile = ApplicationContext.getMailPath(header.getRecipient())+fileId+".xml";
+		String xsdFile = fileId+".xsd";
+		String xmlFile = fileId+".xml";
+		String xsdFilePath= ApplicationContext.getXSDPath(header.getRecipient())+xsdFile;
+		String xmlFilePath = ApplicationContext.getMailPath(header.getRecipient())+xmlFile;
 		
 		Document doc = DocumentBuilderFactory
 	            .newInstance()
@@ -113,16 +142,16 @@ public class MailerImpl implements Mailer{
 	    Node mail = (Node) xPath.evaluate("/mailThread/mail",
 	            doc.getDocumentElement(), XPathConstants.NODE);
 	    
-	    if (oldMails==null)
-	    {
-	    	oldMails=doc.createElement("oldMails");
-	    	oldMails.appendChild(mail.cloneNode(true));
-	    	doc.getDocumentElement().appendChild(oldMails);
-	    }
-	    else
-	    {
-	    	oldMails.insertBefore(mail, oldMails.getFirstChild());
-	    }
+//	    if (oldMails==null)
+//	    {
+//	    	oldMails=doc.createElement("oldMails");
+//	    	oldMails.appendChild(mail.cloneNode(true));
+//	    	doc.getDocumentElement().appendChild(oldMails);
+//	    }
+//	    else
+//	    {
+//	    	oldMails.insertBefore(mail.cloneNode(true), oldMails.getFirstChild());
+//	    }
 	    
 	    Node headerNode = (Node) xPath.evaluate("/mailThread/mail/header",
 	            doc.getDocumentElement(), XPathConstants.NODE);
@@ -151,24 +180,44 @@ public class MailerImpl implements Mailer{
 	    TransformerFactory
 	        .newInstance()
 	        .newTransformer()
-	        .transform(new DOMSource(doc.getDocumentElement()), new StreamResult(new File(xmlFile)));
+	        .transform(new DOMSource(doc.getDocumentElement()), new StreamResult(new File(xmlFilePath)));
 
 		
 		try {
-			modifyXMLResponse(xmlFile,stringValues,checkedBoxList, selectedButtonList);
-			//modifyXMLMessage(xmlFile,itemList);
-			//modifyXSD(xsdFile,itemList);
+			modifyXMLResponse(xmlFilePath,stringValues,checkedBoxList, selectedButtonList);
+			modifyXMLMessage(xmlFilePath,itemList);
+			modifyXSD(xsdFilePath,itemList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		if (!validateXML(xmlFilePath, ApplicationContext.getXSDPath()+fileName.replace(".xml", ".xsd")))
+		{
+			System.out.println("PAS VALID REPLY");
+			//new File(xmlFilePath).delete();
+			//new File(xsdFilePath).delete();
+			return false;
+		}
+		copyFiles(xmlFilePath,ApplicationContext.getSendMailPath()+xmlFile);
+		copyFiles(xsdFilePath, ApplicationContext.getSendXSDPath()+xsdFile);
 		
-		
+		System.out.println("REPLY : " +fileId);
+		return true;
 	}
 	
+	private void copyFiles(String recipientPath, String senderPath) {
+		File src = new File(recipientPath);
+		File dst = new File(senderPath);
+		try {
+			FileUtils.copyFile(src, dst);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	private void modifyXMLResponse(String filePath, List<String> stringValues, List<List<Integer>> checkedBoxList, List<Integer> selectedButtonList) throws Exception
 	{
-		System.out.println(filePath);
 		Document doc = DocumentBuilderFactory
 	            .newInstance()
 	            .newDocumentBuilder()
@@ -182,26 +231,20 @@ public class MailerImpl implements Mailer{
 	    Node messageNode = ((Node) xPath.evaluate("/mailThread/mail/body/message",
 	            doc.getDocumentElement(), XPathConstants.NODE)).cloneNode(true);
 
-	    System.out.println("fils : "+messageNode.getChildNodes().getLength());
-	    NodeList testList = messageNode.getChildNodes();
-	    for (int i=0 ; i<testList.getLength();i++)
+	    while(responseNode.hasChildNodes())
+	    	responseNode.removeChild(responseNode.getFirstChild());
+	    
+	    NodeList childList = messageNode.getChildNodes();
+	    for (int id=0; id<childList.getLength();id++)
 	    {
-	    	System.out.println(i + " : "+testList.item(i).getNodeName());
-	    }
-	    Node messageChildNode = messageNode.getFirstChild();
-	    while(messageChildNode!=null)
-	    {
-	    	System.out.println("name : "+messageChildNode.getNodeName());
-	    	System.out.println(messageChildNode.getFirstChild().getNodeType());
-	    	if (messageChildNode.getNodeType()==Node.TEXT_NODE)
+	    	Node messageChildNode = childList.item(id).cloneNode(true);
+	    	if (messageChildNode.getNodeType()==Node.ELEMENT_NODE)
 	    	{
-	    		System.out.println("child TXT");
-	    		messageChildNode.setTextContent(stringValues.remove(0));
-	    	}
-	    	else if (messageChildNode.getNodeType()==Node.ELEMENT_NODE)
-	    	{
-	    		System.out.println("child ELT");
-	    		if (messageChildNode.getNodeName().equals("choice"))
+	    		if (messageChildNode.getFirstChild() == null)
+	    		{
+	    			messageChildNode.setTextContent(stringValues.remove(0));
+	    		}
+	    		else if (messageChildNode.getNodeName().equals("choice"))
 	    		{
 	    			((Element)messageChildNode).setAttribute("selected", Integer.toString(selectedButtonList.remove(0)));
 	    		}
@@ -209,7 +252,7 @@ public class MailerImpl implements Mailer{
 	    		{
 	    			NodeList valueNodeList = messageChildNode.getChildNodes();
 	    			ArrayList<Integer> ids = (ArrayList<Integer>) checkedBoxList.remove(0);
-	    			for (int i=0; i<ids.size();i++)
+	    			for (int i=0; i<valueNodeList.getLength();i++)
 	    			{
 	    				if (ids.contains(i))
 	    					((Element)valueNodeList.item(i)).setAttribute("selected", "true");
@@ -220,7 +263,6 @@ public class MailerImpl implements Mailer{
 	    	}
 	    	
 	    	responseNode.appendChild(messageChildNode);
-	    	messageChildNode = messageChildNode.getNextSibling();
 	    }
 
 	    // output
@@ -232,7 +274,6 @@ public class MailerImpl implements Mailer{
 	
 	private void modifyXMLMessage(String filePath, List<MailItem> itemList) throws Exception
 	{		
-		System.out.println(filePath);
 		Document doc = DocumentBuilderFactory
 	            .newInstance()
 	            .newDocumentBuilder()
@@ -321,6 +362,8 @@ public class MailerImpl implements Mailer{
 	{
 		Map<String,MailThread> mailThreads= new HashMap<String,MailThread>();
 		File folder = new File(ApplicationContext.getMailPath());
+		File[] fileList = folder.listFiles();
+		//Arrays.sort(fileList);
 	    for (final File fileEntry : folder.listFiles()) {
 	    	try {
 	    		JAXBContext jc = JAXBContext.newInstance("com.polytech.xml.classes");
@@ -350,5 +393,27 @@ public class MailerImpl implements Mailer{
     		e.printStackTrace();
     	}
 	    return thread;
+	}
+	
+	private Boolean validateXML (String xmlFile, String xsdFile)
+	{
+		File schemaFile = new File(xsdFile);
+		// webapp example xsd: 
+		// URL schemaFile = new URL("http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd");
+		// local file example:
+		// File schemaFile = new File("/location/to/localfile.xsd"); // etc.
+		Source xml = new StreamSource(new File(xmlFile));
+		SchemaFactory schemaFactory = SchemaFactory
+		    .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		try {
+		  Schema schema = schemaFactory.newSchema(schemaFile);
+		  Validator validator = schema.newValidator();
+		  validator.validate(xml);
+		  System.out.println(xml.getSystemId() + " is valid");
+		} catch (SAXException e) {
+		  System.out.println(xml.getSystemId() + " is NOT valid reason:" + e);
+		  return false;
+		} catch (IOException e) {return false;}
+		return true;	
 	}
 }

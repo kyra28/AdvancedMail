@@ -4,6 +4,7 @@
 elementFormDefault="qualified">
 
 
+	<xs:include schemaLocation="../../threadBase.xsd"/>
 	<xs:complexType name="responseType">
 		<xs:sequence>
 			
@@ -16,7 +17,7 @@ elementFormDefault="qualified">
 			<xs:element name="free" type="emptyType"/>
 			<xs:element name="number" type="emptyType"/>
 			<xs:element name="date" type="emptyType"/>
-			<xs:element name="tel" type="emptyType"/>
+			<xs:element name="phone" type="emptyType"/>
 			<xs:element name="choice" type="valuesType"/>
 			<xs:element name="selector" type="valuesType"/>
 		</xs:choice>

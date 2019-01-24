@@ -71,8 +71,8 @@ public class SendMailPanel extends JPanel implements ActionListener{
 		if (e.getActionCommand().equals("send"))
 		{
 			try {
-				send();
-				reset();
+				if (send())
+					reset();
 			} catch (DatatypeConfigurationException e1) {
 				e1.printStackTrace();
 			}
@@ -80,7 +80,7 @@ public class SendMailPanel extends JPanel implements ActionListener{
 		
 	}
 	
-	private void send() throws DatatypeConfigurationException
+	private boolean send() throws DatatypeConfigurationException
 	{
 		MailerImpl mailer = new MailerImpl(MailBoxFrame.user);
 		HeaderType header = new HeaderType(); 
@@ -89,7 +89,7 @@ public class SendMailPanel extends JPanel implements ActionListener{
 		header.setSender(MailBoxFrame.user);
 		header.setRecipient(recipient.getText());
 		
-		mailer.send(header, itemsPanel.getItemList());
+		return mailer.send(header, itemsPanel.getItemList());
 		
 	}
 	

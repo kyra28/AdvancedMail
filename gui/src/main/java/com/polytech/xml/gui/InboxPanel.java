@@ -53,7 +53,6 @@ public class InboxPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				reply(fileName, mailThread);
-				
 			}
 		});
 		ShowMailPanel showMailPanel = new ShowMailPanel(fileName,mailThread, true);
@@ -105,7 +104,9 @@ public class InboxPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					mailer.reply(fileName, showMailPanel.getHeader(), sendMailItemsPanel.getItemList(), showMailPanel.getValueList(), showMailPanel.getCheckedList(), showMailPanel.getSelectedRadioList());
+					boolean isReplied = mailer.reply(fileName, showMailPanel.getHeader(), sendMailItemsPanel.getItemList(), showMailPanel.getValueList(), showMailPanel.getCheckedList(), showMailPanel.getSelectedRadioList());
+					if (isReplied)
+						back();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

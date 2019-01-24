@@ -48,9 +48,7 @@ public class MailBoxFrame extends JFrame{
 		inboxButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				activePanel.setVisible(false);
-				inboxPanel.setVisible(true);		
-				activePanel=inboxPanel;
+				showMailBox();
 			}
 		});
 		
@@ -100,6 +98,21 @@ public class MailBoxFrame extends JFrame{
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
 		setSize(800,600); setVisible(true);	sendMailPanel.setVisible(false);sendMailAdvancedPanel.setVisible(false);
 		
+	}
+	
+	private void showMailBox()
+	{
+		centerPanel.remove(inboxPanel);
+		inboxPanel = new InboxPanel(user);
+		
+		activePanel.setVisible(false);
+		inboxPanel.setVisible(true);		
+		
+		centerPanel.add(inboxPanel);
+		activePanel=inboxPanel;
+		
+		this.revalidate();
+		this.repaint();
 	}
 
 }

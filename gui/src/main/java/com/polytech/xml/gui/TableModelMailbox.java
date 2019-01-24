@@ -2,6 +2,7 @@ package com.polytech.xml.gui;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -14,7 +15,8 @@ public class TableModelMailbox extends AbstractTableModel{
 	private final String[] entetes = {"Objet","Expediteur","date"};
 	
 	public TableModelMailbox(Map<String,MailThread> threadMap) {
-		for (Map.Entry<String, MailThread> entry : threadMap.entrySet())
+		TreeMap<String,MailThread> treeThreadMap = new TreeMap<String,MailThread>(threadMap);
+		for (Map.Entry<String, MailThread> entry : treeThreadMap.descendingMap().entrySet())
 		{
 			headers.add(entry.getValue().getMail().getHeader());
 			fileNameList.add(entry.getKey());

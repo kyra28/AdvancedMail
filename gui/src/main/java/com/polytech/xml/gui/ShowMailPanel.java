@@ -33,6 +33,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -69,15 +70,17 @@ public class ShowMailPanel extends JPanel{
 		HeaderType header = mail.getMail().getHeader();
 		
 		userArea.setText(header.getSender());
-		objectArea.setText(header.getObject());
+		
 		if (isReadOnly)
 		{
+			objectArea.setText(header.getObject());
 			userLabel.setText("Expediteur : ");
 			dateLabel.setText("Date : " + header.getDate());
 			userArea.setEditable(false); objectArea.setEditable(false);
 		}
 		else
 		{
+			objectArea.setText("RE: "+header.getObject());
 			userLabel.setText("Destinataire : ");
 		}
 		
@@ -97,7 +100,6 @@ public class ShowMailPanel extends JPanel{
 			displayResponse();
 			displayMessage();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}	
@@ -134,19 +136,31 @@ public class ShowMailPanel extends JPanel{
 	    	{
 	    		if(node.getNodeName().equals("choice"))
 	    		{
+		    		Element e = (Element)node;
+		    		String selectedAttribute = e.getAttribute("selected");
+		    		int id = Integer.parseInt(selectedAttribute);
+		    		int compteur = 0;
 		    		while (childNode!=null)
 		    		{
 		    			JRadioButton radio = new JRadioButton(childNode.getFirstChild().getTextContent());
+		    			if(id==compteur++)
+		    				radio.setSelected(true);
 		    			radio.setEnabled(false);
 		    			this.add(radio);
 		    			childNode = childNode.getNextSibling();
 		    		}
+		    		
 	    		}
 	    		else if(node.getNodeName().equals("selector"))
 	    		{
+	    			
 		    		while (childNode!=null)
 		    		{
+			    		Element e = (Element)childNode;
+			    		String selectedAttribute = e.getAttribute("selected");
 		    			JCheckBox check = new JCheckBox(childNode.getFirstChild().getTextContent());
+		    			if("true".equals(selectedAttribute))
+		    				check.setSelected(true);
 		    			check.setEnabled(false);
 		    			this.add(check);
 		    			childNode = childNode.getNextSibling();
@@ -179,7 +193,7 @@ public class ShowMailPanel extends JPanel{
 	    	Node childNode = node.getFirstChild();
 	    	if (childNode == null)
 	    	{
-	    		this.add(new JLabel(node.getNodeName()));
+	    		this.add(new JLabel(node.getNodeName() + " : "));
 	    		JTextField field = new JTextField();
 	    		fieldList.add(field);
 	    		if (isReadOnly)
