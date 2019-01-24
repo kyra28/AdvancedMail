@@ -156,8 +156,8 @@ public class MailerImpl implements Mailer{
 		
 		try {
 			modifyXMLResponse(xmlFile,stringValues,checkedBoxList, selectedButtonList);
-			modifyXMLMessage(xmlFile,itemList);
-			modifyXSD(xsdFile,itemList);
+			//modifyXMLMessage(xmlFile,itemList);
+			//modifyXSD(xsdFile,itemList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -192,17 +192,13 @@ public class MailerImpl implements Mailer{
 	    while(messageChildNode!=null)
 	    {
 	    	System.out.println("name : "+messageChildNode.getNodeName());
-	    	if (messageChildNode.getFirstChild()==null)
-	    	{
-	    		System.out.println("child null");
-	    		
-	    	}
-	    	else if (messageChildNode.getFirstChild().getNodeType()==Node.TEXT_NODE)
+	    	System.out.println(messageChildNode.getFirstChild().getNodeType());
+	    	if (messageChildNode.getNodeType()==Node.TEXT_NODE)
 	    	{
 	    		System.out.println("child TXT");
 	    		messageChildNode.setTextContent(stringValues.remove(0));
 	    	}
-	    	else if (messageChildNode.getFirstChild().getNodeType()==Node.ELEMENT_NODE)
+	    	else if (messageChildNode.getNodeType()==Node.ELEMENT_NODE)
 	    	{
 	    		System.out.println("child ELT");
 	    		if (messageChildNode.getNodeName().equals("choice"))
