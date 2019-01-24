@@ -55,7 +55,7 @@
 	            </executions>
 	            <configuration>
 	                <sources>
-	                    <source>src/xsd/threadBase.xsd</source>
+	                    <source>src/xsd/defaultTypes.xsd</source>
 	                </sources>
 	                <packageName>com.polytech.xml.classes</packageName>
 	            </configuration>
