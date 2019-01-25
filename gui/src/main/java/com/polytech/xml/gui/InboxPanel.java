@@ -1,17 +1,22 @@
 package com.polytech.xml.gui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import com.polytech.xml.classes.MailThread;
 import com.polytech.xml.services.MailerImpl;
@@ -23,6 +28,8 @@ public class InboxPanel extends JPanel{
 	private JPanel mailBoxPanel = new JPanel();
 	private JPanel mailPanel= new JPanel();
 	private JPanel replyPanel = new JPanel();
+	
+	private JLabel error = new JLabel();
 	
 	
 	public InboxPanel(String user){
@@ -107,14 +114,18 @@ public class InboxPanel extends JPanel{
 					boolean isReplied = mailer.reply(fileName, showMailPanel.getHeader(), sendMailItemsPanel.getItemList(), showMailPanel.getValueList(), showMailPanel.getCheckedList(), showMailPanel.getSelectedRadioList());
 					if (isReplied)
 						back();
-				} catch (Exception e1) {
-					e1.printStackTrace();
+				}
+				catch(SAXException | IOException ex)
+				{
+					error.setText(ex.toString());
+					actualise();
 				}
 			}
 		});
 		replyPanel.add(showMailPanel);
 		replyPanel.setVisible(true);
 		mailPanel.setVisible(false);
+		this.add(error);
 		this.add(send);
 		this.add(replyPanel);
 		this.add(sendMailItemsPanel);
@@ -122,8 +133,15 @@ public class InboxPanel extends JPanel{
 		this.repaint();
 	}
 	
+	private void actualise()
+	{
+		this.revalidate();
+		this.repaint();
+	}
+	
 	private void back()
 	{
+		replyPanel.setVisible(false);
 		mailPanel.setVisible(false);
 		mailBoxPanel.setVisible(true);
 	}

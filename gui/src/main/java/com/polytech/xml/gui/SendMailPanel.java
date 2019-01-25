@@ -53,6 +53,8 @@ public class SendMailPanel extends JPanel implements ActionListener{
 	private JButton sendButton = new MyButton("SEND");
 	private SendMailItemsPanel itemsPanel = new SendMailItemsPanel();
 	private JLabel contentLabel = new JLabel("Contenu du mail : ");
+	private JLabel error = new JLabel();
+	
 	
 	
 	public SendMailPanel(){		
@@ -89,7 +91,16 @@ public class SendMailPanel extends JPanel implements ActionListener{
 		header.setSender(MailBoxFrame.user);
 		header.setRecipient(recipient.getText());
 		
-		return mailer.send(header, itemsPanel.getItemList());
+		try {
+			return mailer.send(header, itemsPanel.getItemList());
+		} catch (IOException e) {
+			error.setText(e.toString());
+		} catch (SAXException e) {
+			error.setText(e.toString());
+		}
+		this.revalidate();
+		this.repaint();		
+		return false;
 		
 	}
 	
@@ -107,6 +118,7 @@ public class SendMailPanel extends JPanel implements ActionListener{
 	
 	private void add()
 	{
+		this.add(error);
 		this.add(recipient);
 		this.add(object);
 		this.add(contentLabel);

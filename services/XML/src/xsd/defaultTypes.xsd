@@ -12,7 +12,7 @@ elementFormDefault="qualified">
 	</xs:complexType> 
 
 	<xs:complexType name="messageType">
-		<xs:choice maxOccurs="unbounded">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="text" type="xs:string"/>
 			<xs:element name="free" type="emptyType"/>
 			<xs:element name="number" type="emptyType"/>
@@ -52,7 +52,7 @@ elementFormDefault="qualified">
   	</xs:simpleType>
   	
 	<xs:simpleType name="date">
-     	<xs:restriction base="xs:date"/>
+     	<xs:restriction base="xs:string"/>
   	</xs:simpleType>
   	
 	<xs:simpleType name="phone">

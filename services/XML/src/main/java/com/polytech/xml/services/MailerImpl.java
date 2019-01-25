@@ -1,6 +1,8 @@
 package com.polytech.xml.services;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -22,6 +24,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -58,7 +61,7 @@ public class MailerImpl implements Mailer{
 		this.user=user;
 	}
 
-	public Boolean send(HeaderType header, List<MailItem> itemList) throws DatatypeConfigurationException
+	public Boolean send(HeaderType header, List<MailItem> itemList) throws IOException, SAXException
 	{
 		String fileId= ApplicationContext.getFileId();
 		String xsdFile = fileId+".xsd";
@@ -74,37 +77,33 @@ public class MailerImpl implements Mailer{
 		bodyType.setMessage(message);
 		bodyType.setResponse(reponse);
 		mailType.setBody(bodyType);
-
-	    GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-        XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
-		header.setDate(now);
-		header.setObject(header.getObject());
-		header.setSender(header.getSender());
-		header.setRecipient(header.getRecipient());
-		
-		mailType.setHeader(header);
-		MailThread thread = new MailThread();
-		thread.setMail(mailType);
-		
 		try 
 		{
+		    GregorianCalendar gregorianCalendar = new GregorianCalendar();
+	        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+	        XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
+			header.setDate(now);
+			header.setObject(header.getObject());
+			header.setSender(header.getSender());
+			header.setRecipient(header.getRecipient());
+			
+			mailType.setHeader(header);
+			MailThread thread = new MailThread();
+			thread.setMail(mailType);
+		
+
 			JAXBContext context = JAXBContext.newInstance(MailThread.class);
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			
 			m.marshal(thread, new File(xmlFilePath));
-		} 
-		catch (JAXBException ex) 
-		{
-			ex.printStackTrace();
-		}
-		
-		try {
+
 			modifyXMLMessage(xmlFilePath,itemList);
 			modifyXSD(xsdFilePath,itemList);
-		} catch (Exception e) {
-			e.printStackTrace();
+		} 
+		catch (Exception ex) 
+		{
+			ex.printStackTrace();
 		}
 		
 		if (!validateXML(xmlFilePath, ApplicationContext.getXSDPath()+"defaultTypes.xsd"))
@@ -116,13 +115,13 @@ public class MailerImpl implements Mailer{
 		}
 		
 		copyFiles(xmlFilePath,ApplicationContext.getSendMailPath()+xmlFile);
-		copyFiles(xsdFilePath, ApplicationContext.getSendXSDPath()+xsdFile);
+		copyFiles(xsdFilePath, ApplicationContext.getSendXSDPath(header.getRecipient())+xsdFile);
 		
 		System.out.println("SEND : " +fileId);
 		return true;
 	}
 	
-	public Boolean reply(String fileName, HeaderType header, List<MailItem> itemList, List<String> stringValues, List<List<Integer>> checkedBoxList, List<Integer> selectedButtonList) throws Exception
+	public Boolean reply(String fileName, HeaderType header, List<MailItem> itemList, List<String> stringValues, List<List<Integer>> checkedBoxList, List<Integer> selectedButtonList) throws IOException, SAXException
 	{
 		String fileId = ApplicationContext.getFileId();
 		String xsdFile = fileId+".xsd";
@@ -130,60 +129,61 @@ public class MailerImpl implements Mailer{
 		String xsdFilePath= ApplicationContext.getXSDPath(header.getRecipient())+xsdFile;
 		String xmlFilePath = ApplicationContext.getMailPath(header.getRecipient())+xmlFile;
 		
-		Document doc = DocumentBuilderFactory
-	            .newInstance()
-	            .newDocumentBuilder()
-	            .parse(new InputSource(ApplicationContext.getMailPath()+fileName));
-
-	    XPath xPath = XPathFactory.newInstance().newXPath();
-	    
-	    Node oldMails = (Node) xPath.evaluate("/mailThread/oldMails",
-	            doc.getDocumentElement(), XPathConstants.NODE);
-	    Node mail = (Node) xPath.evaluate("/mailThread/mail",
-	            doc.getDocumentElement(), XPathConstants.NODE);
-	    
-//	    if (oldMails==null)
-//	    {
-//	    	oldMails=doc.createElement("oldMails");
-//	    	oldMails.appendChild(mail.cloneNode(true));
-//	    	doc.getDocumentElement().appendChild(oldMails);
-//	    }
-//	    else
-//	    {
-//	    	oldMails.insertBefore(mail.cloneNode(true), oldMails.getFirstChild());
-//	    }
-	    
-	    Node headerNode = (Node) xPath.evaluate("/mailThread/mail/header",
-	            doc.getDocumentElement(), XPathConstants.NODE);
-	    
-	    while(headerNode.hasChildNodes())
-	    	headerNode.removeChild(headerNode.getFirstChild());
-	    
-	    GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-        XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
-        
-	    Element sender = doc.createElement("sender");
-	    Element recipient = doc.createElement("recipient");
-	    Element object = doc.createElement("object");
-	    Element date = doc.createElement("date");
-	    sender.setTextContent(header.getSender());
-	    recipient.setTextContent(header.getRecipient());
-	    object.setTextContent(header.getObject());
-	    date.setTextContent(now.toXMLFormat());
-	    headerNode.appendChild(sender);
-	    headerNode.appendChild(recipient);
-	    headerNode.appendChild(object);
-	    headerNode.appendChild(date);
-		
-	    // output
-	    TransformerFactory
-	        .newInstance()
-	        .newTransformer()
-	        .transform(new DOMSource(doc.getDocumentElement()), new StreamResult(new File(xmlFilePath)));
-
-		
+		Document doc;
 		try {
+			doc = DocumentBuilderFactory
+			        .newInstance()
+			        .newDocumentBuilder()
+			        .parse(new InputSource(ApplicationContext.getMailPath()+fileName));
+
+
+		    XPath xPath = XPathFactory.newInstance().newXPath();
+		    
+		    Node oldMails = (Node) xPath.evaluate("/mailThread/oldMails",
+		            doc.getDocumentElement(), XPathConstants.NODE);
+		    Node mail = (Node) xPath.evaluate("/mailThread/mail",
+		            doc.getDocumentElement(), XPathConstants.NODE);
+		    
+	//	    if (oldMails==null)
+	//	    {
+	//	    	oldMails=doc.createElement("oldMails");
+	//	    	oldMails.appendChild(mail.cloneNode(true));
+	//	    	doc.getDocumentElement().appendChild(oldMails);
+	//	    }
+	//	    else
+	//	    {
+	//	    	oldMails.insertBefore(mail.cloneNode(true), oldMails.getFirstChild());
+	//	    }
+		    
+		    Node headerNode = (Node) xPath.evaluate("/mailThread/mail/header",
+		            doc.getDocumentElement(), XPathConstants.NODE);
+		    
+		    while(headerNode.hasChildNodes())
+		    	headerNode.removeChild(headerNode.getFirstChild());
+		    
+		    GregorianCalendar gregorianCalendar = new GregorianCalendar();
+	        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+	        XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
+	        
+		    Element sender = doc.createElement("sender");
+		    Element recipient = doc.createElement("recipient");
+		    Element object = doc.createElement("object");
+		    Element date = doc.createElement("date");
+		    sender.setTextContent(header.getSender());
+		    recipient.setTextContent(header.getRecipient());
+		    object.setTextContent(header.getObject());
+		    date.setTextContent(now.toXMLFormat());
+		    headerNode.appendChild(sender);
+		    headerNode.appendChild(recipient);
+		    headerNode.appendChild(object);
+		    headerNode.appendChild(date);
+			
+		    // output
+		    TransformerFactory
+		        .newInstance()
+		        .newTransformer()
+		        .transform(new DOMSource(doc.getDocumentElement()), new StreamResult(new File(xmlFilePath)));
+
 			modifyXMLResponse(xmlFilePath,stringValues,checkedBoxList, selectedButtonList);
 			modifyXMLMessage(xmlFilePath,itemList);
 			modifyXSD(xsdFilePath,itemList);
@@ -395,7 +395,7 @@ public class MailerImpl implements Mailer{
 	    return thread;
 	}
 	
-	private Boolean validateXML (String xmlFile, String xsdFile)
+	private Boolean validateXML (String xmlFile, String xsdFile) throws IOException,SAXException
 	{
 		File schemaFile = new File(xsdFile);
 		// webapp example xsd: 
@@ -410,10 +410,30 @@ public class MailerImpl implements Mailer{
 		  Validator validator = schema.newValidator();
 		  validator.validate(xml);
 		  System.out.println(xml.getSystemId() + " is valid");
-		} catch (SAXException e) {
-		  System.out.println(xml.getSystemId() + " is NOT valid reason:" + e);
-		  return false;
-		} catch (IOException e) {return false;}
+		}catch(Exception e)
+		{
+			BufferedReader br = new BufferedReader(new FileReader(xmlFile));
+			String xmlContent="";
+			String s;
+			while((s= br.readLine())!=null)
+			{
+				xmlContent+=s;
+			}
+			
+			BufferedReader brr = new BufferedReader(new FileReader(xsdFile));
+			String xsdContent="";
+			while((s= br.readLine())!=null)
+			{
+				xsdContent+=s;
+			}
+			System.out.println(xmlContent);
+			System.out.println(xsdContent);
+			throw e;
+		}
+//		} catch (SAXException e) {
+//		  System.out.println(xml.getSystemId() + " is NOT valid reason:" + e);
+//		  return false;
+//		} catch (IOException e) {return false;}
 		return true;	
 	}
 }
